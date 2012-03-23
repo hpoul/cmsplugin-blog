@@ -62,19 +62,8 @@ class Entry(models.Model):
         url = self.get_absolute_url(language)
         if url:
             return url
+        return None
 
-        # There is no entry in the given language, we return blog's root
-
-        blog_prefix = ''
-
-        try:
-            title = Title.objects.get(application_urls='BlogApphook', language=language)
-            blog_prefix = urljoin(reverse('pages-root'), title.overwrite_url or title.slug)
-        except Title.DoesNotExist:
-            # Blog app hook not defined anywhere?
-            pass
-
-        return blog_prefix or reverse('pages-root')
         
     def _template(self):
         from simple_translation.utils import get_translated_model
