@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.query import QuerySet
 from django.conf import settings
-from django.utils.translation import get_language, ugettext_lazy as _
+from django.utils.translation import get_language, activate, ugettext_lazy as _
 
 from cms.utils.placeholder import PlaceholderNoAction
 from cms.utils.urlutils import urljoin
@@ -59,6 +59,8 @@ class Entry(models.Model):
             return ''
 
     def language_changer(self, language):
+        old_lang = get_language()
+        activate(language)
         url = self.get_absolute_url(language)
         if url:
             return url
@@ -74,7 +76,9 @@ class Entry(models.Model):
             # Blog app hook not defined anywhere?
             pass
 
-        return blog_prefix or reverse('pages-root')
+        ret = blog_prefix or reverse('pages-root')
+        activate(old_lang)
+        return ret
         
     def _template(self):
         from simple_translation.utils import get_translated_model
@@ -103,8 +107,7 @@ class AbstractEntryTitle(models.Model):
         return self.title
         
     def _get_absolute_url(self):
-        language_namespace = 'cmsplugin_blog.middleware.MultilingualBlogEntriesMiddleware' in settings.MIDDLEWARE_CLASSES and '%s:' % self.language or ''
-        return ('%sblog_detail' % language_namespace, (), {
+        return ('blog_detail', (), {
             'year': self.entry.pub_date.strftime('%Y'),
             'month': self.entry.pub_date.strftime('%m'),
             'day': self.entry.pub_date.strftime('%d'),

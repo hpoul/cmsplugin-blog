@@ -25,8 +25,7 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.doc.XViewMiddleware',
-    'django.contrib.csrf.middleware.CsrfViewMiddleware',
-    'cms.middleware.multilingual.MultilingualURLMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
     'cms.middleware.user.CurrentUserMiddleware',
     'cms.middleware.page.CurrentPageMiddleware',
     'cms.middleware.toolbar.ToolbarMiddleware',
@@ -34,12 +33,18 @@ MIDDLEWARE_CLASSES = [
 ]
 
 TEMPLATE_CONTEXT_PROCESSORS = [
-    "django.core.context_processors.auth",
+    "django.contrib.auth.context_processors.auth", # needs to be first (for easy replacement)
     "django.core.context_processors.i18n",
     "django.core.context_processors.debug",
     "django.core.context_processors.request",
     "django.core.context_processors.media"
 ]
+
+if django.VERSION[1] < 4:
+    MIDDLEWARE_CLASSES.append('django.contrib.csrf.middleware.CsrfViewMiddleware')
+    TEMPLATE_CONTEXT_PROCESSORS[0] = 'django.core.context_processors.auth'
+else:
+    MIDDLEWARE_CLASSES.append('django.middleware.locale.LocaleMiddleware')
 
 if django.VERSION[1] < 3: # pragma: no cover
     MIDDLEWARE_CLASSES.insert(12, 'cbv.middleware.DeferredRenderingMiddleware')
@@ -55,6 +60,7 @@ def run_tests():
     from django.conf import settings
     
     settings.configure(
+        SITE_ID = 1,
         INSTALLED_APPS=INSTALLED_APPS,
         MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES,
         TEMPLATE_CONTEXT_PROCESSORS = TEMPLATE_CONTEXT_PROCESSORS,

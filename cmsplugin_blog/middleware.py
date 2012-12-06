@@ -5,7 +5,6 @@ class MultilingualBlogEntriesMiddleware(MultilingualGenericsMiddleware):
     
     language_fallback_middlewares = [
         'django.middleware.locale.LocaleMiddleware',
-        'cms.middleware.multilingual.MultilingualURLMiddleware'
     ]
 
     def process_view(self, request, view_func, view_args, view_kwargs):

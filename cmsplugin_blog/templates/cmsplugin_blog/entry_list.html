@@ -3,8 +3,8 @@
 
 {% block extrahead %}
 {{ block.super }}
-<link rel="alternate" type="application/rss+xml" title="RSS feed for tag &quot;{{ tag.name|escape }}&quot;" href="{% if request.LANGUAGE_CODE %}/{{ request.LANGUAGE_CODE }}{% endif %}{% url blog_rss_tagged tag.name %}" />
-<link rel="alternate" type="application/rss+xml" title="RSS feed for tag &quot;{{ tag.name|escape }}&quot; (any language)" href="{% if request.LANGUAGE_CODE %}/{{ request.LANGUAGE_CODE }}{% endif %}{% url blog_rss_any_tagged tag.name %}" />
+<link rel="alternate" type="application/rss+xml" title="RSS feed for tag &quot;{{ tag.name|escape }}&quot;" href="{% url blog_rss_tagged tag.name %}" />
+<link rel="alternate" type="application/rss+xml" title="RSS feed for tag &quot;{{ tag.name|escape }}&quot; (any language)" href="{% url blog_rss_any_tagged tag.name %}" />
 {% endblock extrahead %}
 
 {% block left-col %}

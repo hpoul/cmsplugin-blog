@@ -1,3 +1,5 @@
+--find-links=http://divio:wlkdjeorijlerf@pkg.divio.ch/simple/
 django-sekizai
 coverage
 unittest-xml-reporting==1.2
+django-cms==2.4a1.dev3

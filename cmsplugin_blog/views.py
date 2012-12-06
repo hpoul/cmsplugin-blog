@@ -10,7 +10,6 @@ from django.http import Http404
 from django.shortcuts import redirect
 from django.utils.translation import ugettext_lazy as _
 
-from cms.middleware.multilingual import has_lang_prefix
 from menus.utils import set_language_changer
 
 from simple_translation.middleware import filter_queryset_language
@@ -109,8 +108,6 @@ class EntryArchiveIndexView(ArchiveIndexView):
 
     def get_dated_items(self):
         items = super(EntryArchiveIndexView, self).get_dated_items()
-        from cmsplugin_blog.urls import language_changer
-        set_language_changer(self.request, language_changer)
         return items
 
     def get_dated_queryset(self, **lookup):
