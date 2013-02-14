@@ -63,6 +63,7 @@ class Entry(models.Model):
         activate(language)
         url = self.get_absolute_url(language)
         if url:
+            activate(old_lang)
             return url
 
         # There is no entry in the given language, we return blog's root
