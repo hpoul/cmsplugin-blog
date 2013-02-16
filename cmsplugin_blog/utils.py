@@ -1,5 +1,5 @@
 from django.utils.translation import get_language, ugettext_lazy as _
-from cms import settings
+from django.conf import settings
 
 
 def module_exists(str):

@@ -284,12 +284,12 @@ class LanguageChangerTestCase(BaseBlogTestCase):
         
         from django.utils.translation import activate
         activate('en')
-        self.assertEquals(entry.get_absolute_url(), u'/test-page-1/2011/08/31/entry-title/')
+        self.assertEquals(entry.get_absolute_url(), u'/en/test-page-1/2011/08/31/entry-title/')
 
-        self.assertEquals(entry.get_absolute_url('en'), u'/test-page-1/2011/08/31/entry-title/')
-        self.assertEquals(entry.language_changer('en'), u'/test-page-1/2011/08/31/entry-title/')
-        self.assertEquals(entry.language_changer('de'), u'/test-page-1/2011/08/31/german/')
-        self.assertEquals(entry.language_changer('nb'), u'/test-page-1/')
+        self.assertEquals(entry.get_absolute_url('en'), u'/en/test-page-1/2011/08/31/entry-title/')
+        self.assertEquals(entry.language_changer('en'), u'/en/test-page-1/2011/08/31/entry-title/')
+        self.assertEquals(entry.language_changer('de'), u'/de/test-page-1/2011/08/31/german/')
+        self.assertEquals(entry.language_changer('nb'), u'/nb/test-page-1/')
         self.assertEquals(entry.language_changer('nn'), u'/')
         
 class RedirectTestCase(BaseBlogTestCase):
@@ -304,7 +304,7 @@ class RedirectTestCase(BaseBlogTestCase):
             mwc = [mw for mw in settings.MIDDLEWARE_CLASSES if mw != 'cmsplugin_blog.middleware.MultilingualBlogEntriesMiddleware']
             with SettingsOverride(MIDDLEWARE_CLASSES=mwc):
                 response = self.client.get(u'/test-page-1/2011/08/31/entry-title/')
-	        self.assertEqual(response.status_code, 404)
+	        self.assertEqual(response.status_code, 302)
 
             response = self.client.get(u'/test-page-1/2011/08/31/entry-title/')
             self.assertRedirects(response, u'/de/test-page-1/2011/08/31/entry-title/')

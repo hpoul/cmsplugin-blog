@@ -2,4 +2,4 @@
 django-sekizai
 coverage
 unittest-xml-reporting==1.2
-django-cms==2.4a1.dev3
+-e git://github.com/divio/django-cms.git@master#egg=django-cms

@@ -33,6 +33,8 @@ class BaseBlogTestCase(CMSTestCase):
             page=page
         )
         page.title_set.all().update(application_urls='BlogApphook')
+        page.publish()
+        home.publish()
         reverse('blog_archive_index') # fill cache
         
     def create_entry_with_title(self, title=None, slug=None, language=None, published=False, published_at=None, author=None, **kwargs):

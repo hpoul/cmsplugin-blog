@@ -3,7 +3,6 @@ from django.contrib.syndication.views import Feed
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
-from cms import settings
 from cms.utils import get_language_from_request
 from simple_translation.translation_pool import translation_pool
 from simple_translation.templatetags.simple_translation_tags import get_preferred_translation_from_lang
