@@ -4,11 +4,12 @@ from tagging.models import Tag, TaggedItem
 from tagging.utils import get_tag
 
 try: # pragma: no cover
-    from django.views.generic.dates import BaseDateDetailView, ArchiveIndexView, _date_lookup_for_field, _date_from_string, YearArchiveView, MonthArchiveView, WeekArchiveView, DayArchiveView
+    from django.views.generic.dates import BaseDateDetailView, ArchiveIndexView, _date_from_string, YearArchiveView, MonthArchiveView, WeekArchiveView, DayArchiveView
     from django.views.generic.detail import SingleObjectTemplateResponseMixin, DetailView
 except ImportError:  # pragma: no cover
+    raise
     from cbv.views.detail import SingleObjectTemplateResponseMixin, DetailView
-    from cbv.views.dates import BaseDateDetailView, ArchiveIndexView, YearArchiveView, MonthArchiveView, WeekArchiveView, DayArchiveView, _date_lookup_for_field, _date_from_string
+    from cbv.views.dates import BaseDateDetailView, ArchiveIndexView, YearArchiveView, MonthArchiveView, WeekArchiveView, DayArchiveView, _date_from_string
 
 from django.http import Http404
 from django.shortcuts import redirect
@@ -54,7 +55,7 @@ class DateDetailView(SingleObjectTemplateResponseMixin, BaseDateDetailView):
         # which'll handle the 404
         date_field = self.get_date_field()
         field = queryset.model._meta.get_field(date_field)
-        lookup = _date_lookup_for_field(field, date)
+        lookup = self._make_single_date_lookup(date)
         queryset = queryset.filter(**lookup)
 
         return super(BaseDateDetailView, self).get_object(queryset=queryset)
