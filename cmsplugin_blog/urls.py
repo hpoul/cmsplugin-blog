@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 from django.core.urlresolvers import reverse
 from django.views.generic.date_based import archive_year, archive_month, archive_day, object_detail
 from django.views.generic.list_detail import object_list
@@ -49,32 +49,36 @@ blog_info_year_dict = {
 
 blog_info_detail_dict = dict(blog_info_month_dict, slug_field='entrytitle__slug')
 
-def language_changer(lang):
-    request = language_changer.request
-    return request.get_full_path()
+#def language_changer(lang):
+#    request = language_changer.request
+#    return request.get_full_path()
 
 blog_archive_index = EntryArchiveIndexView.as_view()
 
 def blog_archive_year(request, **kwargs):
     kwargs['queryset'] = kwargs['queryset'].published()
-    set_language_changer(request, language_changer)
+    if kwargs['queryset'].exists():
+        set_language_changer(request, kwargs['queryset'][0].language_changer)
     return archive_year(request, **kwargs)
     
 def blog_archive_month(request, **kwargs):
     kwargs['queryset'] = kwargs['queryset'].published()
-    set_language_changer(request, language_changer)
+    if kwargs['queryset'].exists():
+        set_language_changer(request, kwargs['queryset'][0].language_changer)
     return archive_month(request, **kwargs)
 
 def blog_archive_day(request, **kwargs):
     kwargs['queryset'] = kwargs['queryset'].published()
-    set_language_changer(request, language_changer)
+    if kwargs['queryset'].exists():
+        set_language_changer(request, kwargs['queryset'][0].language_changer)
     return archive_day(request, **kwargs)
 
 blog_detail = EntryDateDetailView.as_view()
 
 def blog_archive_tagged(request, **kwargs):
     kwargs['queryset_or_model'] = kwargs['queryset_or_model'].published()
-    set_language_changer(request, language_changer)
+    if kwargs['queryset_or_model'].exists():
+        set_language_changer(request, kwargs['queryset_or_model'][0].language_changer)
     return tagged_object_list(request, **kwargs)
 
 def blog_archive_author(request, **kwargs):
@@ -83,7 +87,8 @@ def blog_archive_author(request, **kwargs):
     kwargs['extra_context'] = {
         'author': author,
     }
-    set_language_changer(request, language_changer)
+    if kwargs['queryset'].exists():
+        set_language_changer(request, kwargs['queryset'][0].language_changer)
     return object_list(request, **kwargs)
 
 urlpatterns = patterns('',

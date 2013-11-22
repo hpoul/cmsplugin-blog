@@ -8,8 +8,8 @@ except ImportError: # pragma: no cover
 
 from django.http import Http404
 from django.shortcuts import redirect
+from django.utils.translation import ugettext_lazy as _
 
-from cms.middleware.multilingual import has_lang_prefix
 from menus.utils import set_language_changer
 
 from simple_translation.middleware import filter_queryset_language
@@ -38,7 +38,7 @@ class DateDetailView(SingleObjectTemplateResponseMixin, BaseDateDetailView):
         if queryset is None:
             queryset = self.get_queryset()
 
-        if not self.get_allow_future() and date > datetime.date.today(): # pragma: no cover
+        if not self.get_allow_future() and date > datetime.date.today() and not self.request.user.is_staff: # pragma: no cover
             raise Http404(_(u"Future %(verbose_name_plural)s not available because %(class_name)s.allow_future is False.") % {
                 'verbose_name_plural': queryset.model._meta.verbose_name_plural,
                 'class_name': self.__class__.__name__,
@@ -108,8 +108,6 @@ class EntryArchiveIndexView(ArchiveIndexView):
 
     def get_dated_items(self):
         items = super(EntryArchiveIndexView, self).get_dated_items()
-        from cmsplugin_blog.urls import language_changer
-        set_language_changer(self.request, language_changer)
         return items
 
     def get_dated_queryset(self, **lookup):
