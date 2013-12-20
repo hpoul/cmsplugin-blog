@@ -148,10 +148,10 @@ class BlogDayArchiveView(BlogArchiveMixin, DayArchiveView):
     template_name = 'cmsplugin_blog/entry_archive_day.html'
 
 
-class BlogAuthorArchiveView(DetailView):
+class BlogAuthorArchiveView(BlogArchiveMixin, ArchiveIndexView):
     model = Entry
-    allow_empty = True,
-    template_name = 'cmsplugin_blog/entry_author_list.html',
+    allow_empty = True
+    template_name = 'cmsplugin_blog/entry_author_list.html'
 
     def get_queryset(self):
         author = self.kwargs['author']
