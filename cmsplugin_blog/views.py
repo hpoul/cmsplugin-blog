@@ -155,7 +155,7 @@ class BlogAuthorArchiveView(BlogArchiveMixin, ArchiveIndexView):
 
     def get_queryset(self):
         author = self.kwargs['author']
-        queryset = super(BlogAuthorArchiveView, self).get_queryset().published().filter(entrytitle__author__username=author)
+        queryset = super(BlogAuthorArchiveView, self).get_queryset().published().filter(entrytitle__author__username=author).distinct()
         if queryset:
             set_language_changer(self.request, queryset[0].language_changer)
         return queryset
