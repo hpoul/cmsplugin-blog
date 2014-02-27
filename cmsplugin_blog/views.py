@@ -11,9 +11,10 @@ except ImportError:  # pragma: no cover
     from cbv.views.detail import SingleObjectTemplateResponseMixin, DetailView
     from cbv.views.dates import BaseDateDetailView, ArchiveIndexView, YearArchiveView, MonthArchiveView, WeekArchiveView, DayArchiveView, _date_from_string
 
+from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.shortcuts import redirect
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import get_language, activate, ugettext_lazy as _
 
 from menus.utils import set_language_changer
 
@@ -122,36 +123,57 @@ class EntryArchiveIndexView(ArchiveIndexView):
         return queryset.published()
 
 
+def get_archive_language_changer(view_name, kwargs):
+    def archive_language_changer(language):
+        old_lang = get_language()
+        activate(language)
+        #url = self.get_absolute_url(language)
+        url = reverse(view_name, kwargs=kwargs)
+        if url:
+            activate(old_lang)
+            return url
+        activate(old_lang)
+        return None
+    return archive_language_changer
+
+
 class BlogArchiveMixin(object):
     model = Entry
     date_field = 'pub_date'
     make_object_list = True
     allow_empty = True
     month_format = '%m'
+    view_name = None
 
     def get_queryset(self):
         queryset = super(BlogArchiveMixin, self).get_queryset().published()
-        if queryset:
+        if self.view_name:
+            set_language_changer(self.request, get_archive_language_changer(self.view_name, self.kwargs))
+        elif queryset:
             set_language_changer(self.request, queryset[0].language_changer)
         return queryset
 
 
 class BlogYearArchiveView(BlogArchiveMixin, YearArchiveView):
     template_name = 'cmsplugin_blog/entry_archive_year.html'
+    view_name = 'blog_archive_year'
 
 
 class BlogMonthArchiveView(BlogArchiveMixin, MonthArchiveView):
     template_name = 'cmsplugin_blog/entry_archive_month.html'
+    view_name = 'blog_archive_month'
 
 
 class BlogDayArchiveView(BlogArchiveMixin, DayArchiveView):
     template_name = 'cmsplugin_blog/entry_archive_day.html'
+    view_name = 'blog_archive_day'
 
 
 class BlogAuthorArchiveView(BlogArchiveMixin, ArchiveIndexView):
     model = Entry
     allow_empty = True
     template_name = 'cmsplugin_blog/entry_author_list.html'
+    view_name = 'blog_archive_author'
 
     def get_queryset(self):
         author = self.kwargs['author']
@@ -186,6 +208,7 @@ class TaggedObjectList(ListView):
         if self.tag_instance is None:
             raise Http404(_('No Tag found matching "%s".') % tag)
         context = super(TaggedObjectList, self).get_context_data(**kwargs)
+        context['tag'] = self.tag_instance
         if self.related_tags:
             context['related_tags'] = Tag.objects.related_for_model(
                 self.tag_instance,
@@ -205,5 +228,5 @@ class BlogTaggedArchiveView(TaggedObjectList):
     def get_queryset(self):
         queryset = super(BlogTaggedArchiveView, self).get_queryset().published()
         if queryset:
-            set_language_changer(self.request, queryset[0].language_changer)
+            set_language_changer(self.request, get_archive_language_changer('blog_archive_tagged', self.kwargs))
         return queryset
