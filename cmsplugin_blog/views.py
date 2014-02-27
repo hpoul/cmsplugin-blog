@@ -147,6 +147,7 @@ class BlogArchiveMixin(object):
 
     def get_queryset(self):
         queryset = super(BlogArchiveMixin, self).get_queryset().published()
+        queryset = filter_queryset_language(self.request, queryset)
         if self.view_name:
             set_language_changer(self.request, get_archive_language_changer(self.view_name, self.kwargs))
         elif queryset:
